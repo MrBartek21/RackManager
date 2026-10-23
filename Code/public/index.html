@@ -1,65 +1,181 @@
 <!doctype html>
 <html lang="pl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090d17">
-  <meta name="description" content="Lokalny panel monitorowania szafy RackManager.">
-  <title>RackManager — centrum monitoringu</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
-</head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <a class="brand" href="#overview" aria-label="RackManager — strona główna"><span class="brand-mark">R</span><span>rack<span class="brand-light">manager</span><small>INFRASTRUCTURE MONITOR</small></span></a>
-      <div class="nav-caption">NAWIGACJA</div>
-      <nav class="nav-list" aria-label="Główna nawigacja">
-        <a class="nav-item active" href="#overview"><span class="nav-icon">◫</span>Przegląd <span class="nav-arrow">↗</span></a>
-        <a class="nav-item" href="#devices"><span class="nav-icon">▦</span>Urządzenia <span class="nav-count" id="device-count">0</span></a>
-        <a class="nav-item" href="#events"><span class="nav-icon">≋</span>Zdarzenia</a>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="sidebar-info"><div class="info-icon">⌘</div><div><strong>RackManager</strong><span>Wersja 2.0.0</span></div><span class="version-dot"></span></div>
-        <p>Monitoruj swoją infrastrukturę w jednym miejscu.</p>
-      </div>
-    </aside>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#090d17">
+		<meta name="description" content="Lokalny panel monitorowania szafy RackManager.">
 
-    <main class="main-content" id="overview">
-      <header class="topbar"><div class="breadcrumb">RackManager <span>/</span> <strong>Przegląd</strong></div><div class="topbar-right"><div class="clock"><span class="clock-icon">◷</span><span id="clock">--:--:--</span></div><div class="connection" id="connection"><span></span><b id="connection-label">Łączenie</b></div><div class="avatar">RM</div></div></header>
+		<title>RackManager | Centrum monitoringu</title>
 
-      <section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> CENTRUM MONITORINGU</div><h1>Witaj w RackManager<span class="title-period">.</span></h1><p>Wszystko, co ważne dla Twojej infrastruktury — w jednym miejscu.</p></div><div class="heading-date"><span class="date-icon">▦</span><span id="date-label">--</span></div></section>
+		<link rel="stylesheet" href="style.css">
+		<script src="app.js" defer></script>
+	</head>
+	<body>
+		<div class="app-shell">
 
-      <section class="notice demo-notice" id="demo-notice" hidden><span class="notice-icon">ⓘ</span><div><strong>Tryb demonstracyjny</strong><p>Prezentowane odczyty są przykładowe. Ustaw <code>DEMO_MODE=false</code>, aby używać odczytów z urządzenia.</p></div><span class="notice-tag">DEMO</span></section>
+			<aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="RackManager — strona główna">
+          <span class="brand-mark">R</span>
+          <span>Rack<span class="brand-light">Manager</span></span>
+        </a>
 
-      <section class="summary-grid" aria-label="Podsumowanie systemu">
-        <article class="summary-card"><div class="summary-top"><span>Temperatura CPU</span><span class="summary-icon warm">♨</span></div><div class="summary-value"><strong id="cpu-temp">--</strong><span>°C</span></div><div class="summary-foot"><span class="metric-indicator" id="cpu-temp-state"></span><span id="cpu-temp-caption">Oczekiwanie na odczyt</span><span class="summary-spark"><canvas id="cpu-temp-chart" aria-label="Historia temperatury CPU"></canvas></span></div></article>
-        <article class="summary-card"><div class="summary-top"><span>Użycie procesora</span><span class="summary-icon violet">⌁</span></div><div class="summary-value"><strong id="cpu-usage">--</strong><span>%</span></div><div class="summary-foot"><span class="metric-indicator good"></span><span>Obciążenie CPU</span><span class="summary-spark"><canvas id="cpu-chart" aria-label="Historia użycia CPU"></canvas></span></div></article>
-        <article class="summary-card"><div class="summary-top"><span>Pamięć RAM</span><span class="summary-icon blue">▤</span></div><div class="summary-value"><strong id="ram">--</strong><span>%</span></div><div class="progress-track"><span id="ram-progress"></span></div><div class="summary-foot"><span id="memory-caption">Zużycie pamięci</span><span class="summary-spark"><canvas id="ram-chart" aria-label="Historia pamięci RAM"></canvas></span></div></article>
-        <article class="summary-card"><div class="summary-top"><span>Przestrzeń dyskowa</span><span class="summary-icon green">▰</span></div><div class="summary-value"><strong id="disk">--</strong><span>%</span></div><div class="progress-track"><span id="disk-progress"></span></div><div class="summary-foot"><span>Zajęte miejsce</span><span class="summary-spark"><canvas id="disk-chart" aria-label="Historia użycia dysku"></canvas></span></div></article>
-      </section>
+        <div class="nav-caption">ZARZĄDZANIE</div>
+				<nav class="nav-list" aria-label="Główna nawigacja">
+          <a class="nav-item active" href="#overview"><span class="nav-icon">◫</span>Przegląd <span class="nav-arrow">↗</span></a>
+          <a class="nav-item" href="#devices"><span class="nav-icon">▦</span>Urządzenia <span class="nav-count" id="device-count">0</span></a>
+          <a class="nav-item" href="#events"><span class="nav-icon">≋</span>Zdarzenia</a>
+          <a class="nav-item" href="#eutomations"><span class="nav-icon">≋</span>Automatyzacja</a>
+        </nav>
+				<div class="sidebar-bottom">
+					<div class="sidebar-info">
+						<div class="info-icon">⌘</div>
+						<div class="sidebar-version"><strong>RackManager</strong>
+              <span>Wersja 2.0.0</span>
+              <a class="update-status" id="github-update-status" href="https://github.com/MrBartek21/RackManager" target="_blank" rel="noopener noreferrer">Sprawdzanie GitHuba…</a></div>
+              <span class="version-dot checking" id="github-update-dot"></span>
+					</div>
+				</div>
+			</aside>
 
-      <section class="content-grid">
-        <article class="panel hardware-panel"><div class="panel-heading"><div><div class="panel-kicker">PODŁĄCZONE URZĄDZENIA</div><h2>Twoja infrastruktura</h2></div><span class="live-pill"><span></span> NA ŻYWO</span></div>
-          <div class="rack-visual"><div class="rack-side"><span>RM</span><span>01</span></div><div class="rack-unit"><div class="unit-top"><span class="unit-label">RACKMANAGER · GŁÓWNY WĘZEŁ</span><span class="unit-led"></span></div><div class="unit-main"><div class="unit-logo">R<span>.</span></div><div class="unit-details"><strong id="hostname">Oczekiwanie na system</strong><span id="platform">Połącz panel, aby zobaczyć szczegóły urządzenia</span></div><span class="unit-chip" id="unit-status">ŁĄCZENIE</span></div><div class="unit-bottom"><span><i></i> SYSTEM</span><span><i></i> CZUJNIKI</span><span><i></i> TELEMETRIA</span><span class="uptime" id="uptime">Uptime: --</span></div></div></div>
-          <div class="device-heading" id="devices"><span>WĘZŁY SIECIOWE</span><span id="node-count">0 urządzeń</span></div><div class="device-empty" id="device-empty"><span class="empty-glyph">⌘</span><div><strong>Brak skonfigurowanych urządzeń</strong><p>Dodane węzły pojawią się w tym miejscu.</p></div><span class="coming-soon">GOTOWE NA ROZBUDOWĘ</span></div>
-        </article>
+			<main class="main-content" id="overview">
 
-        <article class="panel sensors-panel"><div class="panel-heading"><div><div class="panel-kicker">TELEMETRIA ŚRODOWISKOWA</div><h2>Czujniki i zasilanie</h2></div><span class="panel-menu">•••</span></div><div class="sensor-list">
-          <div class="sensor-row"><span class="sensor-symbol temp-symbol">°</span><div class="sensor-name"><strong>Temperatura zewnętrzna</strong><span>Czujnik DS18B20</span></div><span class="sensor-reading" id="ext-temp">-- <small>°C</small></span><span class="sensor-state" id="temp-sensor-state">NIEPODŁ.</span></div>
-          <div class="sensor-row"><span class="sensor-symbol door-symbol">⌑</span><div class="sensor-name"><strong>Czujnik drzwi</strong><span>Wejście cyfrowe GPIO</span></div><span class="sensor-reading sensor-unavailable" id="door">--</span><span class="sensor-state muted-state" id="door-state">NIEPODŁ.</span></div>
-          <div class="sensor-row"><span class="sensor-symbol volt-symbol">ϟ</span><div class="sensor-name"><strong>Napięcie zasilania</strong><span>Interfejs pomiarowy</span></div><span class="sensor-reading sensor-unavailable">-- <small>V</small></span><span class="sensor-state muted-state">NIEPODŁ.</span></div>
-          <div class="sensor-row"><span class="sensor-symbol power-symbol">↯</span><div class="sensor-name"><strong>Pobór mocy</strong><span>Interfejs pomiarowy</span></div><span class="sensor-reading sensor-unavailable">-- <small>W</small></span><span class="sensor-state muted-state">NIEPODŁ.</span></div>
-        </div><div class="sensor-footer"><span class="footer-indicator"></span><span>Podłączenie dodatkowych czujników wymaga konfiguracji sprzętu.</span></div></article>
-      </section>
+				<header class="topbar">
+					<div class="breadcrumb">RackManager <span>/</span><strong>Przegląd</strong></div>
+					<div class="topbar-right">
+						<div class="clock"><span class="clock-icon">◷</span><span id="clock">--:--:--</span></div>
+						<div class="connection" id="connection"><span></span><b id="connection-label">Łączenie</b></div>
+						<div class="avatar">RM</div>
+					</div>
+				</header>
 
-      <section class="bottom-grid"><article class="panel system-panel"><div class="panel-heading"><div><div class="panel-kicker">STAN HOSTA</div><h2>Zasoby systemowe</h2></div><span class="host-chip" id="host-chip">—</span></div><div class="resource-grid"><div class="resource-item"><span>UŻYCIE SWAP</span><strong id="swap">--<small> %</small></strong><div class="mini-track"><span id="swap-progress"></span></div></div><div class="resource-item"><span>WOLNA PAMIĘĆ</span><strong id="free-memory">--<small> GB</small></strong><div class="mini-caption">z dostępnej pamięci RAM</div></div><div class="resource-item"><span>ŚREDNIE OBCIĄŻENIE</span><strong id="load-average">--</strong><div class="mini-caption">wartość systemowa</div></div></div></article>
-        <article class="panel events-panel" id="events"><div class="panel-heading"><div><div class="panel-kicker">OSTATNIA AKTYWNOŚĆ</div><h2>Dziennik zdarzeń</h2></div><span class="events-live"><span></span> LIVE</span></div><div class="event-list" id="event-list"><div class="event-item"><span class="event-dot blue-dot"></span><span class="event-copy"><strong>Panel uruchomiony</strong><small>Oczekiwanie na pierwsze dane systemowe</small></span><time>teraz</time></div></div></article></section>
-      <footer class="page-footer"><span><span class="footer-brand">R</span> RackManager <span class="footer-version">v2.0.0</span></span><span id="last-update">Oczekiwanie na połączenie</span><span>Stworzony dla Twojej infrastruktury <span class="footer-heart">♥</span></span></footer>
-    </main>
-  </div>
-</body>
+				<section class="page-heading">
+					<div>
+						<div class="eyebrow"><span class="eyebrow-line"></span> PANEL INFRASTRUKTURY</div>
+						<h1>Przegląd systemu<span class="title-period">.</span></h1>
+						<p>Monitoruj stan swojej infrastruktury w jednym miejscu.</p>
+					</div>
+					<div class="heading-date"><span class="date-icon">▦</span><span id="date-label">--</span></div>
+				</section>
+
+				<section class="notice demo-notice" id="demo-notice" hidden><span class="notice-icon">ⓘ</span>
+					<div><strong>Tryb demonstracyjny</strong>
+						<p>Prezentowane odczyty są przykładowe. Ustaw <code>DEMO_MODE=false</code>, aby używać odczytów z urządzenia.</p>
+					</div><span class="notice-tag">DEMO</span>
+				</section>
+
+				<section class="summary-grid" aria-label="Podsumowanie systemu">
+					<article class="summary-card">
+						<div class="summary-top"><span>Temperatura CPU</span><span class="summary-icon warm">♨</span></div>
+						<div class="summary-value"><strong id="cpu-temp">--</strong><span>°C</span></div>
+						<div class="summary-foot"><span class="metric-indicator" id="cpu-temp-state"></span><span id="cpu-temp-caption">Oczekiwanie na odczyt</span><span class="summary-spark"><canvas id="cpu-temp-chart" aria-label="Historia temperatury CPU"></canvas></span></div>
+					</article>
+					<article class="summary-card">
+						<div class="summary-top"><span>Użycie procesora</span><span class="summary-icon violet">⌁</span></div>
+						<div class="summary-value"><strong id="cpu-usage">--</strong><span>%</span></div>
+						<div class="summary-foot"><span class="metric-indicator good"></span><span>Obciążenie CPU</span><span class="summary-spark"><canvas id="cpu-chart" aria-label="Historia użycia CPU"></canvas></span></div>
+					</article>
+					<article class="summary-card">
+						<div class="summary-top"><span>Pamięć RAM</span><span class="summary-icon blue">▤</span></div>
+						<div class="summary-value"><strong id="ram">--</strong><span>%</span></div>
+						<div class="progress-track"><span id="ram-progress"></span></div>
+						<div class="summary-foot"><span id="memory-caption">Zużycie pamięci</span><span class="summary-spark"><canvas id="ram-chart" aria-label="Historia pamięci RAM"></canvas></span></div>
+					</article>
+					<article class="summary-card">
+						<div class="summary-top"><span>Przestrzeń dyskowa</span><span class="summary-icon green">▰</span></div>
+						<div class="summary-value"><strong id="disk">--</strong><span>%</span></div>
+						<div class="progress-track"><span id="disk-progress"></span></div>
+						<div class="summary-foot"><span>Zajęte miejsce</span><span class="summary-spark"><canvas id="disk-chart" aria-label="Historia użycia dysku"></canvas></span></div>
+					</article>
+				</section>
+
+				<section class="content-grid">
+					<article class="panel hardware-panel">
+						<div class="panel-heading">
+							<div>
+								<div class="panel-kicker">PODŁĄCZONE URZĄDZENIA</div>
+								<h2>Twoja infrastruktura</h2>
+							</div><span class="live-pill"><span></span> NA ŻYWO</span>
+						</div>
+						<div class="rack-visual">
+							<div class="rack-side"><span>RM</span><span>01</span></div>
+							<div class="rack-unit">
+								<div class="unit-top"><span class="unit-label">RACKMANAGER · GŁÓWNY WĘZEŁ</span><span class="unit-led"></span></div>
+								<div class="unit-main">
+									<div class="unit-logo">R<span>.</span></div>
+									<div class="unit-details"><strong id="hostname">Oczekiwanie na system</strong><span id="platform">Połącz panel, aby zobaczyć szczegóły urządzenia</span></div><span class="unit-chip" id="unit-status">ŁĄCZENIE</span>
+								</div>
+								<div class="unit-bottom"><span><i></i> SYSTEM</span><span><i></i> CZUJNIKI</span><span><i></i> TELEMETRIA</span><span class="uptime" id="uptime">Uptime: --</span></div>
+							</div>
+						</div>
+						<div class="device-heading" id="devices"><span>WĘZŁY SIECIOWE</span><span id="node-count">0 urządzeń</span></div>
+						<div class="device-empty" id="device-empty"><span class="empty-glyph">⌘</span>
+							<div><strong>Brak skonfigurowanych urządzeń</strong>
+								<p>Dodane węzły pojawią się w tym miejscu.</p>
+							</div><span class="coming-soon">GOTOWE NA ROZBUDOWĘ</span>
+						</div>
+					</article>
+					<article class="panel sensors-panel">
+						<div class="panel-heading">
+							<div>
+								<div class="panel-kicker">TELEMETRIA ŚRODOWISKOWA</div>
+								<h2>Czujniki i zasilanie</h2>
+							</div><span class="panel-menu">•••</span>
+						</div>
+						<div class="sensor-list">
+							<div class="sensor-row"><span class="sensor-symbol temp-symbol">°</span>
+								<div class="sensor-name"><strong>Temperatura zewnętrzna</strong><span>Czujnik DS18B20</span></div><span class="sensor-reading" id="ext-temp">-- <small>°C</small></span><span class="sensor-state" id="temp-sensor-state">NIEPODŁ.</span>
+							</div>
+							<div class="sensor-row"><span class="sensor-symbol door-symbol">⌑</span>
+								<div class="sensor-name"><strong>Czujnik drzwi</strong><span>Wejście cyfrowe GPIO</span></div><span class="sensor-reading sensor-unavailable" id="door">--</span><span class="sensor-state muted-state" id="door-state">NIEPODŁ.</span>
+							</div>
+							<div class="sensor-row"><span class="sensor-symbol volt-symbol">ϟ</span>
+								<div class="sensor-name"><strong>Napięcie zasilania</strong><span>Interfejs pomiarowy</span></div><span class="sensor-reading sensor-unavailable">-- <small>V</small></span><span class="sensor-state muted-state">NIEPODŁ.</span>
+							</div>
+							<div class="sensor-row"><span class="sensor-symbol power-symbol">↯</span>
+								<div class="sensor-name"><strong>Pobór mocy</strong><span>Interfejs pomiarowy</span></div><span class="sensor-reading sensor-unavailable">-- <small>W</small></span><span class="sensor-state muted-state">NIEPODŁ.</span>
+							</div>
+						</div>
+						<div class="sensor-footer"><span class="footer-indicator"></span><span>Podłączenie dodatkowych czujników wymaga konfiguracji sprzętu.</span></div>
+					</article>
+				</section>
+
+				<section class="bottom-grid">
+					<article class="panel system-panel">
+						<div class="panel-heading">
+							<div>
+								<div class="panel-kicker">STAN HOSTA</div>
+								<h2>Zasoby systemowe</h2>
+							</div><span class="host-chip" id="host-chip">—</span>
+						</div>
+						<div class="resource-grid">
+							<div class="resource-item"><span>UŻYCIE SWAP</span><strong id="swap">--<small> %</small></strong>
+								<div class="mini-track"><span id="swap-progress"></span></div>
+							</div>
+							<div class="resource-item"><span>WOLNA PAMIĘĆ</span><strong id="free-memory">--<small> GB</small></strong>
+								<div class="mini-caption">z dostępnej pamięci RAM</div>
+							</div>
+							<div class="resource-item"><span>ŚREDNIE OBCIĄŻENIE</span><strong id="load-average">--</strong>
+								<div class="mini-caption">wartość systemowa</div>
+							</div>
+						</div>
+					</article>
+					<article class="panel events-panel" id="events">
+						<div class="panel-heading">
+							<div>
+								<div class="panel-kicker">OSTATNIA AKTYWNOŚĆ</div>
+								<h2>Dziennik zdarzeń</h2>
+							</div><span class="events-live"><span></span> LIVE</span>
+						</div>
+						<div class="event-list" id="event-list">
+							<div class="event-item"><span class="event-dot blue-dot"></span><span class="event-copy"><strong>Panel uruchomiony</strong><small>Oczekiwanie na pierwsze dane systemowe</small></span><time>teraz</time></div>
+						</div>
+					</article>
+				</section>
+
+				<footer class="page-footer"><span id="last-update">Oczekiwanie na połączenie</span></footer>
+			</main>
+
+		</div>
+	</body>
 </html>

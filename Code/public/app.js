@@ -30,6 +30,30 @@ function updateClock() {
   byId('date-label').textContent = new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
 }
 
+async function updateGithubVersionStatus() {
+  const label = byId('github-update-status');
+  const dot = byId('github-update-dot');
+  if (!label || !dot) return;
+  try {
+    const response = await fetch('/api/update-status', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('Status GitHuba jest niedostępny');
+    const result = await response.json();
+    const isUpdateAvailable = result.state === 'update';
+    label.textContent = isUpdateAvailable ? 'Dostępna aktualizacja' : 'Wersja aktualna';
+    label.href = result.latestUrl || 'https://github.com/MrBartek21/RackManager';
+    label.title = isUpdateAvailable ? 'Otwórz najnowszy commit na GitHubie' : 'Sprawdź repozytorium RackManager';
+    dot.classList.toggle('update-available', isUpdateAvailable);
+    dot.classList.toggle('up-to-date', result.state === 'current');
+    dot.classList.toggle('checking', result.state === 'unavailable');
+    if (result.state === 'unavailable') label.textContent = 'Nie można sprawdzić GitHuba';
+  } catch {
+    label.textContent = 'Nie można sprawdzić GitHuba';
+    label.href = 'https://github.com/MrBartek21/RackManager';
+    dot.classList.remove('update-available', 'up-to-date');
+    dot.classList.add('checking');
+  }
+}
+
 function setConnection(connected) {
   byId('connection').classList.toggle('connected', connected);
   byId('connection').classList.toggle('disconnected', !connected);
@@ -165,4 +189,6 @@ function connect() {
 
 updateClock();
 setInterval(updateClock, 1000);
+updateGithubVersionStatus();
+setInterval(updateGithubVersionStatus, 10 * 60 * 1000);
 connect();
