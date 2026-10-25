@@ -1,7 +1,7 @@
 'use strict';
 
 const byId = (id) => document.getElementById(id);
-const histories = new Map();
+//const histories = new Map();
 const MAX_POINTS = 24;
 let socket;
 let reconnectTimer;
@@ -16,6 +16,11 @@ function formatBytes(bytes) {
   return (bytes / 1024 ** 3).toLocaleString('pl-PL', { maximumFractionDigits: 1 });
 }
 
+function formatMegabytes(bytes) {
+  if (!Number.isFinite(bytes)) return '—';
+  return (bytes / 1_000_000).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function formatUptime(seconds) {
   if (!Number.isFinite(seconds)) return 'Uptime: —';
   const days = Math.floor(seconds / 86400);
@@ -27,7 +32,6 @@ function formatUptime(seconds) {
 function updateClock() {
   const now = new Date();
   byId('clock').textContent = now.toLocaleTimeString('pl-PL');
-  byId('date-label').textContent = new Intl.DateTimeFormat('pl-PL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
 }
 
 async function updateGithubVersionStatus() {
@@ -60,10 +64,10 @@ function setConnection(connected) {
   byId('connection-label').textContent = connected ? 'Połączono' : 'Ponowne łączenie';
   byId('unit-status').textContent = connected ? 'ONLINE' : 'OFFLINE';
   byId('unit-status').classList.toggle('online-chip', connected);
-  byId('last-update').textContent = connected ? 'Dane aktualizują się na żywo' : 'Brak połączenia z serwerem';
+  byId('last-update').textContent = connected ? 'Dane na żywo' : 'Brak nowych danych';
 }
 
-function addHistory(key, value) {
+/*function addHistory(key, value) {
   if (!Number.isFinite(value)) return;
   if (!histories.has(key)) histories.set(key, []);
   const values = histories.get(key);
@@ -100,7 +104,7 @@ function drawChart(id, values) {
   context.lineJoin = 'round';
   context.lineCap = 'round';
   context.stroke();
-}
+}*/
 
 function updateMetric(id, value, suffix = '') {
   byId(id).textContent = Number.isFinite(value) ? `${formatNumber(value)}${suffix}` : '—';
@@ -129,27 +133,77 @@ function addEvent(title, detail, kind = 'blue-dot') {
 function renderStatus(message) {
   if (!message || message.type !== 'status' || !message.system) return;
   const data = message.system;
+  console.log(message);
   byId('demo-notice').hidden = !message.demoMode;
 
   updateMetric('cpu-temp', data.cpuTemp);
   updateMetric('cpu-usage', data.cpuUsage);
   updateMetric('ram', data.ram);
   updateMetric('disk', data.disk);
+  byId('network-sent').textContent = formatMegabytes(data.network?.sentBytes);
+  byId('network-received').textContent = formatMegabytes(data.network?.receivedBytes);
+
+
+
+
+
   updateMetric('swap', data.swap);
+
+
+  //TEMP SENSORS
   updateMetric('ext-temp', data.extTemp, ' °C');
   byId('ext-temp').classList.toggle('sensor-unavailable', !Number.isFinite(data.extTemp));
-  byId('temp-sensor-state').textContent = Number.isFinite(data.extTemp) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('temp-sensor-state').classList.toggle('active-state', Number.isFinite(data.extTemp));
+  byId('ext-temp-sensor-state').textContent = Number.isFinite(data.extTemp) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('ext-temp-sensor-state').classList.toggle('active-state', Number.isFinite(data.extTemp));
+
+  updateMetric('int-temp-1', data.intTemp1, ' °C');
+  byId('int-temp-1').classList.toggle('sensor-unavailable', !Number.isFinite(data.intTemp1));
+  byId('int-temp-1-sensor-state').textContent = Number.isFinite(data.intTemp1) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('int-temp-1-sensor-state').classList.toggle('active-state', Number.isFinite(data.intTemp1));
+
+  updateMetric('int-temp-2', data.intTemp2, ' °C');
+  byId('int-temp-2').classList.toggle('sensor-unavailable', !Number.isFinite(data.intTemp2));
+  byId('int-temp-2-sensor-state').textContent = Number.isFinite(data.intTemp2) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('int-temp-2-sensor-state').classList.toggle('active-state', Number.isFinite(data.intTemp2));
+
+
+  //DOOR
   byId('door').textContent = data.door === true ? 'Otwarte' : data.door === false ? 'Zamknięte' : '—';
   byId('door-state').textContent = data.door === null ? 'NIEPODŁ.' : 'AKTYWNY';
   byId('door-state').classList.toggle('active-state', data.door !== null);
-  byId('cpu-temp-caption').textContent = Number.isFinite(data.cpuTemp) ? (data.cpuTemp >= 70 ? 'Podwyższona temperatura' : 'Temperatura nominalna') : 'Odczyt niedostępny';
-  byId('cpu-temp-state').classList.toggle('warning', Number.isFinite(data.cpuTemp) && data.cpuTemp >= 70);
 
-  byId('ram-progress').style.width = `${Math.max(0, Math.min(100, data.ram || 0))}%`;
-  byId('disk-progress').style.width = `${Math.max(0, Math.min(100, data.disk || 0))}%`;
+
+  //POWER
+  updateMetric('power-volt', data.powerVolt, ' V');
+  byId('power-volt').classList.toggle('sensor-unavailable', !Number.isFinite(data.powerVolt));
+  byId('power-volt-state').textContent = Number.isFinite(data.powerVolt) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('power-volt-state').classList.toggle('active-state', Number.isFinite(data.powerVolt));
+
+  updateMetric('power-watt', data.powerWatt, ' W');
+  byId('power-watt').classList.toggle('sensor-unavailable', !Number.isFinite(data.powerWatt));
+  byId('power-watt-state').textContent = Number.isFinite(data.powerWatt) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('power-wattr-state').classList.toggle('active-state', Number.isFinite(data.powerWatt));
+
+
+  //RELAYS
+  byId('relay1').textContent = data.relay1 === true ? 'Otwarte' : data.relay1 === false ? 'Zamknięte' : '—';
+  byId('relay1-state').textContent = data.relay1 === null ? 'NIEPODŁ.' : 'AKTYWNY';
+  byId('relay1-state').classList.toggle('active-state', data.relay1 !== null);
+
+  byId('relay2').textContent = data.relay2 === true ? 'Otwarte' : data.relay2 === false ? 'Zamknięte' : '—';
+  byId('relay2-state').textContent = data.relay2 === null ? 'NIEPODŁ.' : 'AKTYWNY';
+  byId('relay2-state').classList.toggle('active-state', data.relay2 !== null);
+
+
+
+
+  //byId('cpu-temp-caption').textContent = Number.isFinite(data.cpuTemp) ? (data.cpuTemp >= 70 ? 'Podwyższona temperatura' : 'Temperatura nominalna') : 'Odczyt niedostępny';
+  //byId('cpu-temp-state').classList.toggle('warning', Number.isFinite(data.cpuTemp) && data.cpuTemp >= 70);
+
+  //byId('ram-progress').style.width = `${Math.max(0, Math.min(100, data.ram || 0))}%`;
+  //byId('disk-progress').style.width = `${Math.max(0, Math.min(100, data.disk || 0))}%`;
   byId('swap-progress').style.width = `${Math.max(0, Math.min(100, data.swap || 0))}%`;
-  byId('memory-caption').textContent = `${formatBytes(data.memory?.totalBytes)} GB łącznie`;
+  //byId('memory-caption').textContent = `${formatBytes(data.memory?.totalBytes)} GB łącznie`;
   byId('free-memory').innerHTML = `${formatBytes(data.memory?.freeBytes)}<small> GB</small>`;
   byId('hostname').textContent = data.hostname || 'RackManager';
   byId('platform').textContent = data.platform || 'System operacyjny';
@@ -158,12 +212,12 @@ function renderStatus(message) {
   byId('node-count').textContent = `${message.devices?.length || 0} urządzeń`;
   byId('device-count').textContent = String(message.devices?.length || 0);
   byId('load-average').textContent = Array.isArray(data.loadAverage) ? data.loadAverage[0].toFixed(2) : '—';
-  byId('last-update').textContent = `Ostatnia aktualizacja: ${new Date(message.timestamp).toLocaleTimeString('pl-PL')}`;
+  //byId('last-update').textContent = `Ostatnia aktualizacja: ${new Date(message.timestamp).toLocaleTimeString('pl-PL')}`;
 
-  addHistory('cpu-temp', data.cpuTemp);
-  addHistory('cpu', data.cpuUsage);
-  addHistory('ram', data.ram);
-  addHistory('disk', data.disk);
+  //addHistory('cpu-temp', data.cpuTemp);
+  //addHistory('cpu', data.cpuUsage);
+  //addHistory('ram', data.ram);
+  //addHistory('disk', data.disk);
 
   if (firstStatus) {
     addEvent(message.demoMode ? 'Uruchomiono tryb demonstracyjny' : 'Odczytano dane systemowe', `Host: ${data.hostname || 'RackManager'}`, 'green-dot');
@@ -174,11 +228,13 @@ function renderStatus(message) {
 function connect() {
   const scheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   socket = new WebSocket(`${scheme}//${window.location.host}/ws`);
-  socket.addEventListener('open', () => setConnection(true));
+
   socket.addEventListener('message', (event) => {
     try { renderStatus(JSON.parse(event.data)); }
     catch { addEvent('Nieprawidłowe dane', 'Serwer wysłał wiadomość, której nie można odczytać.', 'yellow-dot'); }
   });
+
+  socket.addEventListener('open', () => setConnection(true));
   socket.addEventListener('close', () => {
     setConnection(false);
     clearTimeout(reconnectTimer);
