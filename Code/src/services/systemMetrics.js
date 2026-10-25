@@ -6,6 +6,46 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 let previousCpu = null;
+let cachedNetworkUsage = null;
+let cachedNetworkUsageAt = 0;
+
+function readNetworkUsage() {
+  if (cachedNetworkUsageAt && Date.now() - cachedNetworkUsageAt < 3000) return cachedNetworkUsage;
+  try {
+    let sentBytes = 0;
+    let receivedBytes = 0;
+    if (process.platform === 'linux') {
+      const rows = fs.readFileSync('/proc/net/dev', 'utf8').split(/\r?\n/).slice(2);
+      for (const row of rows) {
+        const separator = row.indexOf(':');
+        if (separator < 0 || row.slice(0, separator).trim() === 'lo') continue;
+        const counters = row.slice(separator + 1).trim().split(/\s+/).map(Number);
+        receivedBytes += counters[0] || 0;
+        sentBytes += counters[8] || 0;
+      }
+    } else if (process.platform === 'win32') {
+      const script = '$s=Get-NetAdapterStatistics; [PSCustomObject]@{sent=($s|Measure-Object -Property SentBytes -Sum).Sum; received=($s|Measure-Object -Property ReceivedBytes -Sum).Sum}|ConvertTo-Json -Compress';
+      const output = execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
+        timeout: 2500,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).toString();
+      const totals = JSON.parse(output);
+      sentBytes = Number(totals.sent);
+      receivedBytes = Number(totals.received);
+    } else {
+      return null;
+    }
+    cachedNetworkUsage = Number.isFinite(sentBytes) && Number.isFinite(receivedBytes)
+      ? { sentBytes, receivedBytes }
+      : null;
+    cachedNetworkUsageAt = Date.now();
+    return cachedNetworkUsage;
+  } catch {
+    cachedNetworkUsageAt = Date.now();
+    cachedNetworkUsage = null;
+    return null;
+  }
+}
 
 function cpuUsage() {
   const cpus = os.cpus();
@@ -67,18 +107,6 @@ function readSwapUsage() {
   } catch { return null; }
 }
 
-function readExternalTemperature() {
-  const base = '/sys/bus/w1/devices';
-  try {
-    const device = fs.readdirSync(base).find((name) => name.startsWith('28-'));
-    if (!device) return null;
-    const content = fs.readFileSync(path.join(base, device, 'w1_slave'), 'utf8');
-    if (!content.includes('YES')) return null;
-    const raw = Number(content.match(/t=(-?\d+)/)?.[1]);
-    return Number.isFinite(raw) ? Number((raw / 1000).toFixed(1)) : null;
-  } catch { return null; }
-}
-
 function readSystemMetrics() {
   const totalMemory = os.totalmem();
   const freeMemory = os.freemem();
@@ -88,7 +116,6 @@ function readSystemMetrics() {
     ram: totalMemory ? Number(((1 - freeMemory / totalMemory) * 100).toFixed(1)) : null,
     swap: readSwapUsage(),
     disk: readDiskUsage(),
-    extTemp: readExternalTemperature(),
     memory: { totalBytes: totalMemory, freeBytes: freeMemory },
     uptimeSeconds: Math.floor(os.uptime()),
     loadAverage: os.loadavg().map((value) => Number(value.toFixed(2))),
@@ -97,4 +124,4 @@ function readSystemMetrics() {
   };
 }
 
-module.exports = { readSystemMetrics };
+module.exports = { readSystemMetrics, readNetworkUsage };

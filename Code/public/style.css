@@ -796,9 +796,6 @@ body {
   font-size:9px
 }
 
-.sensor-reading.sensor-unavailable {
-  color:#75839a
-}
 
 .sensor-state {
   min-width:50px;
@@ -808,12 +805,16 @@ body {
   letter-spacing:.25px
 }
 
-.sensor-state.muted-state {
-  color:#77849a
-}
-
 .sensor-state.active-state {
   color:#68d7b2
+}
+
+.sensor-reading.active-state {
+  color:#38ca69
+}
+
+.sensor-reading.nonactive-state {
+  color:#ca4238
 }
 
 .sensor-footer {
@@ -1846,9 +1847,6 @@ body {
   color:#e0c36e
 }
 
-.sensor-state.muted-state {
-  color:#a5b2bd
-}
 
 .sensor-reading {
   font-size:12px

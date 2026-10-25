@@ -133,6 +133,7 @@ function addEvent(title, detail, kind = 'blue-dot') {
 function renderStatus(message) {
   if (!message || message.type !== 'status' || !message.system) return;
   const data = message.system;
+  const peripherals = message.peripherals || {};
   console.log(message);
   byId('demo-notice').hidden = !message.demoMode;
 
@@ -145,56 +146,71 @@ function renderStatus(message) {
 
 
 
-
-
-  updateMetric('swap', data.swap);
-
-
   //TEMP SENSORS
-  updateMetric('ext-temp', data.extTemp, ' °C');
-  byId('ext-temp').classList.toggle('sensor-unavailable', !Number.isFinite(data.extTemp));
-  byId('ext-temp-sensor-state').textContent = Number.isFinite(data.extTemp) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('ext-temp-sensor-state').classList.toggle('active-state', Number.isFinite(data.extTemp));
+  updateMetric('ext-temp', peripherals.extTemp, ' °C');
+  byId('ext-temp').classList.toggle('sensor-unavailable', !Number.isFinite(peripherals.extTemp));
+  byId('ext-temp-sensor-state').textContent = Number.isFinite(peripherals.extTemp) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('ext-temp-sensor-state').classList.toggle('active-state', Number.isFinite(peripherals.extTemp));
 
-  updateMetric('int-temp-1', data.intTemp1, ' °C');
-  byId('int-temp-1').classList.toggle('sensor-unavailable', !Number.isFinite(data.intTemp1));
-  byId('int-temp-1-sensor-state').textContent = Number.isFinite(data.intTemp1) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('int-temp-1-sensor-state').classList.toggle('active-state', Number.isFinite(data.intTemp1));
+  updateMetric('int-temp-1', peripherals.intTemp1, ' °C');
+  byId('int-temp-1').classList.toggle('sensor-unavailable', !Number.isFinite(peripherals.intTemp1));
+  byId('int-temp-1-sensor-state').textContent = Number.isFinite(peripherals.intTemp1) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('int-temp-1-sensor-state').classList.toggle('active-state', Number.isFinite(peripherals.intTemp1));
 
-  updateMetric('int-temp-2', data.intTemp2, ' °C');
-  byId('int-temp-2').classList.toggle('sensor-unavailable', !Number.isFinite(data.intTemp2));
-  byId('int-temp-2-sensor-state').textContent = Number.isFinite(data.intTemp2) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('int-temp-2-sensor-state').classList.toggle('active-state', Number.isFinite(data.intTemp2));
+  updateMetric('int-temp-2', peripherals.intTemp2, ' °C');
+  byId('int-temp-2').classList.toggle('sensor-unavailable', !Number.isFinite(peripherals.intTemp2));
+  byId('int-temp-2-sensor-state').textContent = Number.isFinite(peripherals.intTemp2) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('int-temp-2-sensor-state').classList.toggle('active-state', Number.isFinite(peripherals.intTemp2));
 
 
   //DOOR
-  byId('door').textContent = data.door === true ? 'Otwarte' : data.door === false ? 'Zamknięte' : '—';
-  byId('door-state').textContent = data.door === null ? 'NIEPODŁ.' : 'AKTYWNY';
-  byId('door-state').classList.toggle('active-state', data.door !== null);
+  byId('door').textContent = peripherals.door === true ? 'Otwarte' : peripherals.door === false ? 'Zamknięte' : '—';
+  byId('door-state').textContent = peripherals.door === null ? 'NIEPODŁ.' : 'AKTYWNY';
+  byId('door-state').classList.toggle('active-state', peripherals.door !== null);
+
+  if(peripherals.door === true){
+    byId('door').classList.toggle('active-state', peripherals.door !== null);
+  }else{
+    byId('door').classList.toggle('nonactive-state', peripherals.door !== null);
+  }
 
 
   //POWER
-  updateMetric('power-volt', data.powerVolt, ' V');
-  byId('power-volt').classList.toggle('sensor-unavailable', !Number.isFinite(data.powerVolt));
-  byId('power-volt-state').textContent = Number.isFinite(data.powerVolt) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('power-volt-state').classList.toggle('active-state', Number.isFinite(data.powerVolt));
+  updateMetric('power-volt', peripherals['power-volt'], ' V');
+  byId('power-volt').classList.toggle('sensor-unavailable', !Number.isFinite(peripherals['power-volt']));
+  byId('power-volt-state').textContent = Number.isFinite(peripherals['power-volt']) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('power-volt-state').classList.toggle('active-state', Number.isFinite(peripherals['power-volt']));
 
-  updateMetric('power-watt', data.powerWatt, ' W');
-  byId('power-watt').classList.toggle('sensor-unavailable', !Number.isFinite(data.powerWatt));
-  byId('power-watt-state').textContent = Number.isFinite(data.powerWatt) ? 'AKTYWNY' : 'NIEPODŁ.';
-  byId('power-wattr-state').classList.toggle('active-state', Number.isFinite(data.powerWatt));
+  updateMetric('power-watt', peripherals['power-watt'], ' W');
+  byId('power-watt').classList.toggle('sensor-unavailable', !Number.isFinite(peripherals['power-watt']));
+  byId('power-watt-state').textContent = Number.isFinite(peripherals['power-watt']) ? 'AKTYWNY' : 'NIEPODŁ.';
+  byId('power-watt-state').classList.toggle('active-state', Number.isFinite(peripherals['power-watt']));
 
 
   //RELAYS
-  byId('relay1').textContent = data.relay1 === true ? 'Otwarte' : data.relay1 === false ? 'Zamknięte' : '—';
-  byId('relay1-state').textContent = data.relay1 === null ? 'NIEPODŁ.' : 'AKTYWNY';
-  byId('relay1-state').classList.toggle('active-state', data.relay1 !== null);
+  byId('relay1').textContent = peripherals.relay1 === true ? 'Włączony' : peripherals.relay1 === false ? 'Wyłączony' : '—';
+  byId('relay1-state').textContent = peripherals.relay1 === null ? 'NIEPODŁ.' : 'AKTYWNY';
+  byId('relay1-state').classList.toggle('active-state', peripherals.relay1 !== null);
 
-  byId('relay2').textContent = data.relay2 === true ? 'Otwarte' : data.relay2 === false ? 'Zamknięte' : '—';
-  byId('relay2-state').textContent = data.relay2 === null ? 'NIEPODŁ.' : 'AKTYWNY';
-  byId('relay2-state').classList.toggle('active-state', data.relay2 !== null);
+  byId('relay2').textContent = peripherals.relay2 === true ? 'Włączony' : peripherals.relay2 === false ? 'Wyłączony' : '—';
+  byId('relay2-state').textContent = peripherals.relay2 === null ? 'NIEPODŁ.' : 'AKTYWNY';
+  byId('relay2-state').classList.toggle('active-state', peripherals.relay2 !== null);
+
+  if(peripherals.relay1 === true){
+    byId('relay1').classList.toggle('active-state', peripherals.relay1 !== null);
+  }else{
+    byId('relay1').classList.toggle('nonactive-state', peripherals.relay1 !== null);
+  }
+
+  if(peripherals.relay2 === true){
+    byId('relay2').classList.toggle('active-state', peripherals.relay2 !== null);
+  }else{
+    byId('relay2').classList.toggle('nonactive-state', peripherals.relay2 !== null);
+  }
 
 
+
+  updateMetric('swap', data.swap);
 
 
   //byId('cpu-temp-caption').textContent = Number.isFinite(data.cpuTemp) ? (data.cpuTemp >= 70 ? 'Podwyższona temperatura' : 'Temperatura nominalna') : 'Odczyt niedostępny';

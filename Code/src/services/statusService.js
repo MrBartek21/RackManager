@@ -1,19 +1,19 @@
 'use strict';
 
-const os = require('node:os');
 const config = require('../config');
-const { readSystemMetrics } = require('./systemMetrics');
-const { readDemoMetrics } = require('./demoMetrics');
+const { readSystemMetrics, readNetworkUsage } = require('./systemMetrics');
+const { readPeripherals } = require('./peripheralsMetrics');
+const { readDemoMetrics, readDemoPeripherals } = require('./demoMetrics');
 
 function getStatus() {
-  const metrics = config.demoMode ? readDemoMetrics() : readSystemMetrics();
+  const isDemoMode = config.demoMode;
   return {
     type: 'status',
     timestamp: new Date().toISOString(),
-    demoMode: config.demoMode,
-    system: { ...metrics, door: null },
+    demoMode: isDemoMode,
+    system: { ...(isDemoMode ? readDemoMetrics() : readSystemMetrics()), network: readNetworkUsage() },
+    peripherals: isDemoMode ? readDemoPeripherals() : readPeripherals(),
     devices: [],
-    host: os.hostname(),
   };
 }
 
