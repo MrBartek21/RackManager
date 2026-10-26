@@ -63,6 +63,10 @@ Code/
 
 W trybie rzeczywistym aplikacja odczytuje zasoby hosta przez API Node.js oraz system plików Linuksa (temperatura termiczna, SWAP, DS18B20). Brak dostępnego czujnika jest zwracany jako `null` i widoczny w panelu jako „—”. Obsługa wejścia drzwi, pomiaru zasilania, Multimax/Modbus i pozostałych węzłów wymaga dopisania adaptera do `src/services` po ustaleniu pinów, adresów i protokołu płytki.
 
+### Model urządzenia Multimax
+
+Planowany rekord urządzenia może zawierać: `id`, `name`, `type`, `protocol`, `interface`, `address`, `firmwareVersion`, `hardwareVersion`, `serialNumber`, `status` i `lastSeen`. W zależności od możliwości protokołu można dodać `protocolVersion`, `uptimeSeconds`, liczniki błędów/komunikacji oraz stany wejść/wyjść i pomiary właściwe dla modułu. Pola muszą odzwierciedlać dane rzeczywiście zwracane przez urządzenie. Obecny wpis demonstracyjny nie jest odczytem z fizycznej magistrali; parser RS-485 nie jest jeszcze zaimplementowany.
+
 ## Prywatność i dostęp
 
 Serwer domyślnie nasłuchuje na wszystkich interfejsach sieciowych, aby panel był osiągalny w sieci lokalnej. Wystaw go poza zaufaną sieć dopiero po skonfigurowaniu zapory i warstwy uwierzytelniania. Plik `.env` nie powinien trafiać do Git.

@@ -130,6 +130,80 @@ function addEvent(title, detail, kind = 'blue-dot') {
   while (list.children.length > 5) list.lastElementChild.remove();
 }
 
+function renderDevices(devices = []) {
+  const list = byId('device-list');
+  const emptyState = byId('device-empty');
+  list.replaceChildren();
+  const items = Array.isArray(devices) ? devices : [];
+
+  for (const device of items) {
+    const card = document.createElement('article');
+    card.className = 'network-device-card';
+
+    const icon = document.createElement('span');
+    icon.className = 'network-device-icon';
+    const iconGlyph = document.createElement('i');
+    iconGlyph.className = 'bi bi-motherboard';
+    iconGlyph.setAttribute('aria-hidden', 'true');
+    icon.append(iconGlyph);
+
+    const details = document.createElement('div');
+    details.className = 'network-device-details';
+    const nameRow = document.createElement('div');
+    nameRow.className = 'network-device-name-row';
+    const name = document.createElement('strong');
+    name.textContent = device.name || device.hostname || 'Urządzenie Multimax';
+    nameRow.append(name);
+    if (device.example) {
+      const example = document.createElement('span');
+      example.className = 'network-device-example';
+      example.textContent = 'PRZYKŁAD';
+      nameRow.append(example);
+    }
+    const metadata = document.createElement('div');
+    metadata.className = 'network-device-metadata';
+    const lastSeen = device.lastSeen ? new Date(device.lastSeen) : null;
+    const lastSeenText = lastSeen && !Number.isNaN(lastSeen.getTime())
+      ? lastSeen.toLocaleString('pl-PL')
+      : device.lastSeen;
+    const fields = [
+      ['ID urządzenia', device.id],
+      ['Typ', device.type],
+      ['Firmware', device.firmwareVersion],
+      ['Hardware', device.hardwareVersion],
+      ['Protokół', device.protocol],
+      ['Magistrala', device.interface],
+      ['Adres RS-485', device.address],
+      ['Numer seryjny', device.serialNumber],
+      ['Ostatnia komunikacja', lastSeenText],
+    ];
+    for (const [label, value] of fields) {
+      if (value === undefined || value === null || value === '') continue;
+      const field = document.createElement('div');
+      field.className = 'network-device-field';
+      const fieldLabel = document.createElement('span');
+      fieldLabel.textContent = label;
+      const fieldValue = document.createElement('strong');
+      fieldValue.textContent = String(value);
+      field.append(fieldLabel, fieldValue);
+      metadata.append(field);
+    }
+    details.append(nameRow, metadata);
+
+    const status = document.createElement('span');
+    const online = device.status === 'online' || device.status === 'connected' || device.online === true;
+    status.className = `network-device-status ${online ? 'is-online' : 'is-offline'}`;
+    status.textContent = online ? 'ONLINE' : 'OFFLINE';
+    card.append(icon, details, status);
+    list.append(card);
+  }
+
+  list.hidden = items.length === 0;
+  emptyState.hidden = items.length > 0;
+  byId('node-count').textContent = `${items.length} ${items.length === 1 ? 'urządzenie' : 'urządzeń'}`;
+  byId('device-count').textContent = String(items.length);
+}
+
 function renderStatus(message) {
   if (!message || message.type !== 'status' || !message.system) return;
   const data = message.system;
@@ -210,30 +284,26 @@ function renderStatus(message) {
 
 
 
+  byId('host-chip').textContent = data.platform || '—';
   updateMetric('swap', data.swap);
+  byId('swap-progress').style.width = `${Math.max(0, Math.min(100, data.swap || 0))}%`;
+  byId('free-memory').innerHTML = `${formatBytes(data.memory?.freeBytes)}<small> GB</small>`;
+  byId('load-average').textContent = Array.isArray(data.loadAverage) ? data.loadAverage[0].toFixed(2) : '—';
 
 
   //byId('cpu-temp-caption').textContent = Number.isFinite(data.cpuTemp) ? (data.cpuTemp >= 70 ? 'Podwyższona temperatura' : 'Temperatura nominalna') : 'Odczyt niedostępny';
   //byId('cpu-temp-state').classList.toggle('warning', Number.isFinite(data.cpuTemp) && data.cpuTemp >= 70);
-
   //byId('ram-progress').style.width = `${Math.max(0, Math.min(100, data.ram || 0))}%`;
   //byId('disk-progress').style.width = `${Math.max(0, Math.min(100, data.disk || 0))}%`;
-  byId('swap-progress').style.width = `${Math.max(0, Math.min(100, data.swap || 0))}%`;
   //byId('memory-caption').textContent = `${formatBytes(data.memory?.totalBytes)} GB łącznie`;
-  byId('free-memory').innerHTML = `${formatBytes(data.memory?.freeBytes)}<small> GB</small>`;
+
   byId('hostname').textContent = data.hostname || 'RackManager';
   byId('platform').textContent = data.platform || 'System operacyjny';
   byId('uptime').textContent = formatUptime(data.uptimeSeconds);
-  byId('host-chip').textContent = data.platform || '—';
-  byId('node-count').textContent = `${message.devices?.length || 0} urządzeń`;
-  byId('device-count').textContent = String(message.devices?.length || 0);
-  byId('load-average').textContent = Array.isArray(data.loadAverage) ? data.loadAverage[0].toFixed(2) : '—';
-  //byId('last-update').textContent = `Ostatnia aktualizacja: ${new Date(message.timestamp).toLocaleTimeString('pl-PL')}`;
+  renderDevices(message.devices);
 
-  //addHistory('cpu-temp', data.cpuTemp);
-  //addHistory('cpu', data.cpuUsage);
-  //addHistory('ram', data.ram);
-  //addHistory('disk', data.disk);
+
+
 
   if (firstStatus) {
     addEvent(message.demoMode ? 'Uruchomiono tryb demonstracyjny' : 'Odczytano dane systemowe', `Host: ${data.hostname || 'RackManager'}`, 'green-dot');
