@@ -1,0 +1,58 @@
+.hardware-panel { grid-column: span 1; }
+.rack-visual { display:flex; min-height:140px; margin-top:15px; overflow:hidden; border:1px solid var(--line); border-radius:9px; background:#151f2b; }
+.rack-side { display:flex; width:40px; flex-direction:column; align-items:center; justify-content:space-between; padding:12px 0; border-right:1px solid var(--line); background:#121d28; color:#aab7c2; font:11px var(--mono); }
+.rack-unit { flex:1; min-width:0; padding:12px 15px; }
+.unit-top { display:flex; align-items:center; justify-content:space-between; color:#b2bec8; font:11px var(--mono); letter-spacing:.7px; }
+.unit-led { width:7px; height:7px; border-radius:50%; background:#57d4ab; box-shadow:0 0 8px #57d4ab; }
+.unit-main { display:flex; align-items:center; gap:12px; margin-top:12px; }
+.unit-logo { display:grid; width:42px; height:42px; flex:none; place-items:center; border:1px solid #594781; border-radius:8px; background:#282344; color:#cbb8ff; font-size:20px; }
+.unit-details { min-width:0; }
+.unit-details strong,.unit-details span { display:block; }
+.unit-details strong { overflow:hidden; font-size:14px; text-overflow:ellipsis; white-space:nowrap; }
+.unit-details span { margin-top:4px; color:#aab7c2; font-size:12px; }
+.unit-chip { flex:none; margin-left:auto; padding:5px 7px; border:1px solid #594781; border-radius:5px; background:#28213d; color:#d5c8ff; font:10px var(--mono); letter-spacing:.5px; }
+.unit-chip.online-chip { border-color:#285145; background:#142a27; color:#77ddbb; }
+.unit-bottom { display:flex; align-items:center; gap:14px; margin-top:13px; color:#b0bdc8; font:10px var(--mono); letter-spacing:.25px; }
+.unit-bottom>span { display:flex; align-items:center; gap:5px; }
+.unit-bottom i { width:5px; height:5px; border-radius:50%; background:#60c9a9; }
+.unit-bottom .uptime { margin-left:auto; color:#c0cbd4; font-size:10px; letter-spacing:0; }
+.device-heading { display:flex; justify-content:space-between; margin-top:16px; color:#aab7c2; font:11px var(--mono); letter-spacing:.8px; }
+.device-heading span:last-child { color:#aab7c2; letter-spacing:0; }
+.device-empty { display:flex; align-items:center; gap:10px; margin-top:9px; padding:12px 10px; border:1px dashed #2a3946; border-radius:8px; background:#151f2b; }
+.empty-glyph { display:grid; width:30px; height:30px; flex:none; place-items:center; border-radius:6px; background:#282344; color:#b5a1ff; font-size:16px; }
+.device-empty strong { font-size:12px; font-weight:600; }
+.device-empty p { margin:3px 0 0; color:#aab7c2; font-size:11px; }
+.device-list { display:grid; gap:8px; margin-top:10px; }
+.network-device-card { display:flex; align-items:flex-start; gap:11px; min-width:0; padding:13px; border:1px solid #34414c; border-radius:8px; background:#151f2b; }
+.network-device-icon { display:grid; place-items:center; flex:none; width:40px; height:40px; border:1px solid #493b62; border-radius:8px; background:#28213d; color:#c7aff8; font-size:19px; }
+.network-device-details { display:grid; flex:1; min-width:0; gap:10px; }
+.network-device-name-row { display:flex; align-items:center; gap:8px; min-height:30px; }
+.network-device-name-row strong { overflow:hidden; color:#e4eaf0; font-size:13px; text-overflow:ellipsis; white-space:nowrap; }
+.network-device-example { flex:none; padding:3px 6px; border:1px solid #493b62; border-radius:5px; color:#d0bff4; font-size:9px; font-weight:700; letter-spacing:.4px; }
+.network-device-details small { display:block; margin-top:3px; color:#a2afbb; font-size:11px; }
+.network-device-metadata { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 14px; }
+.network-device-field { display:grid; gap:3px; min-width:0; }
+.network-device-field>span { color:#aab7c2; font-size:10px; letter-spacing:.2px; }
+.network-device-field strong { overflow:hidden; color:#dce4eb; font-size:12px; font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
+.network-device-status { flex:none; margin-left:4px; padding:5px 7px; border-radius:5px; font-size:10px; font-weight:700; letter-spacing:.4px; }
+.network-device-status.is-online { border:1px solid #285145; background:#142a27; color:#77ddbb; }
+.network-device-status.is-offline { border:1px solid #583b42; background:#2a1c22; color:#e89a9d; }
+.device-heading { color:#aab7c2; font-size:11px; }
+.device-heading span:last-child { color:#aab7c2; }
+.coming-soon { color:#d1c2f6; font-size:11px; letter-spacing:.2px; }
+@media(max-width:650px) {
+  .rack-unit { padding:10px; }
+  .unit-bottom { flex-wrap:wrap; gap:8px 11px; font-size:9px; }
+  .unit-bottom .uptime { font-size:9px; }
+  .unit-details strong { font-size:12px; }
+  .unit-details span { font-size:11px; }
+  .unit-chip { padding:4px 5px; font-size:9px; }
+  .device-empty strong { font-size:11px; }
+  .device-empty p { font-size:10px; }
+  .network-device-card { gap:8px; padding:10px; }
+  .network-device-icon { width:34px; height:34px; font-size:17px; }
+  .network-device-name-row { flex-wrap:wrap; gap:4px 6px; }
+  .network-device-metadata { gap:8px; }
+  .network-device-field>span { font-size:10px; }
+  .network-device-field strong { font-size:11px; }
+}

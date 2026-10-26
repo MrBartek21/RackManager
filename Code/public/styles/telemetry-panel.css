@@ -1,0 +1,46 @@
+.telemetry-panel { min-width:0; }
+.sensor-list { display:grid; gap:8px; margin-top:12px; }
+.sensor-row { display:flex; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:11px; min-height:56px; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#151f2b; }
+
+.sensor-name { flex:1; min-width:0; }
+.sensor-name strong { display:block; color:#e2e9ef; font-size:13px; }
+.sensor-name span { display:block; margin-top:3px; color:#aab7c2; font-size:12px; line-height:1.35; }
+
+.sensor-symbol {
+  display:grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  border:1px solid #31364a;
+  border-radius:6px;
+  background:#1c2234;
+  font:15px var(--mono);
+  color:#b5a1ff
+}
+
+
+.sensor-state { min-width:68px; color:#e0c36e; font-size:11px; letter-spacing:.15px; text-align:right; }
+.sensor-state.active-state { color:#68d7b2; }
+
+.sensor-reading { color:var(--text); font-size:13px; font-variant-numeric:tabular-nums; min-width:42px; text-align:right; }
+.sensor-reading small { color:#97a5b8; font-size:9px; }
+.sensor-reading.active-state { color:#38ca69; }
+.sensor-reading.nonactive-state { color:#ca4238; }
+
+
+
+.sensor-footer { margin-top:12px; color:#9baab6; font-size:11px; }
+.unit-top { color:#b2bec8; font-size:12px; letter-spacing:.7px; }
+.unit-bottom,.unit-bottom .uptime { color:#b0bdc8; font-size:11px; letter-spacing:.25px; }
+.live-pill { color:#e0d4fb; font-size:11px; letter-spacing:.4px; }
+
+
+@media(max-width:650px) {
+  .sensor-row { min-height:58px; gap:8px; padding:9px; }
+  .sensor-name strong,.sensor-name span { font-size:12px; }
+  .sensor-state { min-width:62px; font-size:10px; }
+  .sensor-reading { font-size:12px; }
+  .sensor-footer { font-size:11px; }
+  .unit-top { font-size:11px; }
+  .unit-bottom,.unit-bottom .uptime,.live-pill { font-size:10px; }
+}
