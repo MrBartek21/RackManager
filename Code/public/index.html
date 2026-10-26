@@ -9,7 +9,7 @@
 		<title>RackManager | Centrum monitoringu</title>
 
 		<link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="/styles/main.css">
 		<script src="app.js" defer></script>
 	</head>
 	<body>
@@ -96,70 +96,82 @@
 							<div class="rack-unit">
 								<div class="unit-top"><span class="unit-label">RACKMANAGER · GŁÓWNY WĘZEŁ</span><span class="unit-led"></span></div>
 								<div class="unit-main">
-									<div class="unit-logo">R<span>.</span></div>
+									<div class="unit-logo"><i class="bi bi-hdd-rack" aria-hidden="true"></i></div>
 									<div class="unit-details"><strong id="hostname">Oczekiwanie na system</strong><span id="platform">Połącz panel, aby zobaczyć szczegóły urządzenia</span></div><span class="unit-chip" id="unit-status">ŁĄCZENIE</span>
 								</div>
 								<div class="unit-bottom"><span><i></i> SYSTEM</span><span><i></i> CZUJNIKI</span><span><i></i> TELEMETRIA</span><span class="uptime" id="uptime">Uptime: --</span></div>
 							</div>
 						</div>
 						<div class="device-heading" id="devices"><span>WĘZŁY SIECIOWE</span><span id="node-count">0 urządzeń</span></div>
-						<div class="device-empty" id="device-empty"><span class="empty-glyph">⌘</span>
+						<div class="device-list" id="device-list" hidden></div>
+						<div class="device-empty" id="device-empty"><span class="empty-glyph"><i class="bi bi-exclamation-circle" aria-hidden="true"></i></span>
 							<div><strong>Brak skonfigurowanych urządzeń</strong>
 								<p>Dodane węzły pojawią się w tym miejscu.</p>
-							</div><span class="coming-soon">GOTOWE NA ROZBUDOWĘ</span>
-						</div>
-					</article>
-
-
-					<article class="panel sensors-panel">
-						<div class="panel-heading"><h2>TELEMETRIA</h2></div>
-						<div class="sensor-list">
-							<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Temperatura zewnętrzna</strong><span>Czujnik DS18B20</span></div>
-								<span class="sensor-reading" id="ext-temp">-- <small>°C</small></span>
-								<span class="sensor-state" id="ext-temp-sensor-state">NIEPODŁ.</span>
-							</div>
-              				<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Temperatura wewnętrzna 1</strong></div>
-								<span class="sensor-reading" id="int-temp-1">-- <small>°C</small></span>
-								<span class="sensor-state" id="int-temp-1-sensor-state">NIEPODŁ.</span>
-							</div>
-              				<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Temperatura wewnętrzna 2</strong></div>
-								<span class="sensor-reading" id="int-temp-2">-- <small>°C</small></span>
-								<span class="sensor-state" id="int-temp-2-sensor-state">NIEPODŁ.</span>
-							</div>
-
-
-							<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-door-closed" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Czujnik drzwi</strong></div>
-								<span class="sensor-reading" id="door">--</span>
-								<span class="sensor-state" id="door-state">NIEPODŁ.</span>
-							</div>
-
-							<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-lightning" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Napięcie zasilania</strong></div>
-								<span class="sensor-reading" id="power-volt">-- <small>V</small></span>
-								<span class="sensor-state" id="power-volt-state">NIEPODŁ.</span>
-							</div>
-							<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-lightning" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Pobór mocy</strong></div>
-								<span class="sensor-reading" id="power-watt">-- <small>W</small></span>
-								<span class="sensor-state" id="power-watt-state">NIEPODŁ.</span>
-							</div>
-
-              				<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-plug" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Przekaźnik 1</strong></div>
-								<span class="sensor-reading" id="relay1">--</span>
-								<span class="sensor-state" id="relay1-state">NIEPODŁ.</span>
-							</div>
-              				<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-plug" aria-hidden="true"></i></span>
-								<div class="sensor-name"><strong>Przekaźnik 2</strong><!--<span>Interfejs pomiarowy</span>--></div>
-								<span class="sensor-reading" id="relay2">--</span>
-								<span class="sensor-state" id="relay2-state">NIEPODŁ.</span>
 							</div>
 						</div>
 					</article>
+
+
+					<div class="telemetry-stack">
+						<article class="panel sensors-panel">
+							<div class="panel-heading"><h2>TELEMETRIA</h2></div>
+							<div class="sensor-list">
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Temperatura zewnętrzna</strong><span>Czujnik DS18B20</span></div>
+									<span class="sensor-reading" id="ext-temp">-- <small>°C</small></span>
+									<span class="sensor-state" id="ext-temp-sensor-state">NIEPODŁ.</span>
+								</div>
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Temperatura wewnętrzna 1</strong></div>
+									<span class="sensor-reading" id="int-temp-1">-- <small>°C</small></span>
+									<span class="sensor-state" id="int-temp-1-sensor-state">NIEPODŁ.</span>
+								</div>
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-thermometer-low" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Temperatura wewnętrzna 2</strong></div>
+									<span class="sensor-reading" id="int-temp-2">-- <small>°C</small></span>
+									<span class="sensor-state" id="int-temp-2-sensor-state">NIEPODŁ.</span>
+								</div>
+
+
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-door-closed" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Czujnik drzwi</strong></div>
+									<span class="sensor-reading" id="door">--</span>
+									<span class="sensor-state" id="door-state">NIEPODŁ.</span>
+								</div>
+
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-lightning" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Napięcie zasilania</strong></div>
+									<span class="sensor-reading" id="power-volt">-- <small>V</small></span>
+									<span class="sensor-state" id="power-volt-state">NIEPODŁ.</span>
+								</div>
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-lightning" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Pobór mocy</strong></div>
+									<span class="sensor-reading" id="power-watt">-- <small>W</small></span>
+									<span class="sensor-state" id="power-watt-state">NIEPODŁ.</span>
+								</div>
+
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-plug" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Przekaźnik 1</strong></div>
+									<span class="sensor-reading" id="relay1">--</span>
+									<span class="sensor-state" id="relay1-state">NIEPODŁ.</span>
+								</div>
+								<div class="sensor-row"><span class="sensor-symbol"><i class="bi bi-plug" aria-hidden="true"></i></span>
+									<div class="sensor-name"><strong>Przekaźnik 2</strong><!--<span>Interfejs pomiarowy</span>--></div>
+									<span class="sensor-reading" id="relay2">--</span>
+									<span class="sensor-state" id="relay2-state">NIEPODŁ.</span>
+								</div>
+							</div>
+						</article>
+
+						<article class="panel events-panel" id="events">
+							<div class="panel-heading">
+								<div><h2>Dziennik zdarzeń</h2></div>
+							</div>
+							<div class="event-list" id="event-list">
+
+							</div>
+						</article>
+					</div>
 				</section>
 
 				<section class="bottom-grid">
@@ -179,18 +191,6 @@
 							<div class="resource-item"><span>ŚREDNIE OBCIĄŻENIE</span><strong id="load-average">--</strong>
 								<div class="mini-caption">wartość systemowa</div>
 							</div>
-						</div>
-					</article>
-
-					
-					<article class="panel events-panel" id="events">
-						<div class="panel-heading">
-							<div>
-								<h2>Dziennik zdarzeń</h2>
-							</div><span class="events-live"><span></span> LIVE</span>
-						</div>
-						<div class="event-list" id="event-list">
-							<div class="event-item"><span class="event-dot blue-dot"></span><span class="event-copy"><strong>Panel uruchomiony</strong><small>Oczekiwanie na pierwsze dane systemowe</small></span><time>teraz</time></div>
 						</div>
 					</article>
 				</section>
