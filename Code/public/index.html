@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="pl">
+<html lang="pl" data-page="overview">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="theme-color" content="#090d17">
 		<meta name="description" content="Lokalny panel monitorowania szafy RackManager.">
 
-		<title>RackManager | Centrum monitoringu</title>
+		<title>RackManager | Przegląd</title>
 
 		<link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
 		<link rel="stylesheet" href="/styles/main.css">
@@ -16,21 +16,21 @@
 		<div class="app-shell">
 
 			<aside class="sidebar">
-				<a class="brand" href="#overview" aria-label="RackManager — strona główna">
+				<a class="brand" href="/index.html" aria-label="RackManager — strona główna">
 					<span class="brand-mark">R</span>
 					<span>Rack<span class="brand-light">Manager</span></span>
 				</a>
 
         		<div class="nav-caption">ZARZĄDZANIE</div>
 				<nav class="nav-list" aria-label="Główna nawigacja">
-					<a class="nav-item active" href="#overview"><span class="nav-icon">◫</span>Przegląd <span class="nav-arrow">↗</span></a>
-					<a class="nav-item" href="#devices"><span class="nav-icon">▦</span>Urządzenia <span class="nav-count" id="device-count">0</span></a>
-					<a class="nav-item" href="#events"><span class="nav-icon">≋</span>Zdarzenia</a>
-					<a class="nav-item" href="#eutomations"><span class="nav-icon">≋</span>Automatyzacja</a>
+					<a class="nav-item active" href="/index.html"><span class="nav-icon"><i class="bi bi-postcard" aria-hidden="true"></i></span>Przegląd <span class="nav-arrow">↗</span></a>
+					<a class="nav-item" href="/devices.html"><span class="nav-icon"><i class="bi bi-hdd" aria-hidden="true"></i></span>Urządzenia <span class="nav-count" id="device-count">0</span></a>
+					<a class="nav-item" href="/events.html"><span class="nav-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></span>Zdarzenia</a>
+					<a class="nav-item" href="/automations.html"><span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>Automatyzacje</a>
 				</nav>
 				<div class="sidebar-bottom">
 					<div class="sidebar-info">
-						<div class="info-icon">⌘</div>
+						<div class="info-icon"><i class="bi bi-github" aria-hidden="true"></i></div>
 						<div class="sidebar-version">
 							<strong>RackManager</strong>
               				<span>Wersja 2.0.0</span>
@@ -44,7 +44,7 @@
 			<main class="main-content" id="overview">
 
 				<header class="topbar">
-					<div class="breadcrumb"><strong>PANEL INFRASTRUKTURY</strong> - Monitoruj stan swojej infrastruktury w jednym miejscu.</div>
+					<div class="breadcrumb"><strong>Przegląd</strong></div>
 					<div class="topbar-right">
 						<div class="clock"><span id="clock">--:--:--</span></div>
             			<div class="clock"><span id="last-update">Oczekiwanie...</span></div>
@@ -75,7 +75,7 @@
 						<div class="summary-top"><span>Dysk systemowy</span><span class="summary-icon yellow"><i class="bi bi-hdd-rack" aria-hidden="true"></i></span></div>
 						<div class="summary-value"><strong id="disk">--</strong><span>%</span></div>
 					</article>
-          <article class="summary-card">
+          			<article class="summary-card">
 						<div class="summary-top"><span>Transfer sieciowy</span><span class="summary-icon cyan"><i class="bi bi-hdd-network" aria-hidden="true"></i></span></div>
 						<div class="network-transfer" aria-live="polite">
 							<div class="network-transfer-row"><span>Wysłano</span><strong id="network-sent">--</strong><small>MB</small></div>
@@ -89,23 +89,23 @@
 						<div class="panel-heading">
 							<div>
 								<h2>PODŁĄCZONE URZĄDZENIA</h2>
-							</div><span class="live-pill"><span></span> NA ŻYWO</span>
+							</div>
 						</div>
 						<div class="rack-visual">
-							<div class="rack-side"><span>RM</span><span>01</span></div>
 							<div class="rack-unit">
-								<div class="unit-top"><span class="unit-label">RACKMANAGER · GŁÓWNY WĘZEŁ</span><span class="unit-led"></span></div>
+								<div class="unit-top"><span class="unit-label">GŁÓWNY WĘZEŁ</span></div>
 								<div class="unit-main">
 									<div class="unit-logo"><i class="bi bi-hdd-rack" aria-hidden="true"></i></div>
-									<div class="unit-details"><strong id="hostname">Oczekiwanie na system</strong><span id="platform">Połącz panel, aby zobaczyć szczegóły urządzenia</span></div><span class="unit-chip" id="unit-status">ŁĄCZENIE</span>
+									<div class="unit-details"><strong id="hostname">Oczekiwanie na system</strong><span id="platform">Połącz panel, aby zobaczyć szczegóły urządzenia</span></div>
 								</div>
-								<div class="unit-bottom"><span><i></i> SYSTEM</span><span><i></i> CZUJNIKI</span><span><i></i> TELEMETRIA</span><span class="uptime" id="uptime">Uptime: --</span></div>
+								<div class="unit-bottom"><span class="uptime" id="uptime">Uptime: --</span></div>
 							</div>
 						</div>
 						<div class="device-heading" id="devices"><span>WĘZŁY SIECIOWE</span><span id="node-count">0 urządzeń</span></div>
 						<div class="device-list" id="device-list" hidden></div>
 						<div class="device-empty" id="device-empty"><span class="empty-glyph"><i class="bi bi-exclamation-circle" aria-hidden="true"></i></span>
-							<div><strong>Brak skonfigurowanych urządzeń</strong>
+							<div>
+								<strong>Brak skonfigurowanych urządzeń</strong>
 								<p>Dodane węzły pojawią się w tym miejscu.</p>
 							</div>
 						</div>

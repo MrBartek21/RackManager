@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pl" data-page="devices">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#090d17">
+		<meta name="description" content="Lokalny panel monitorowania szafy RackManager.">
+
+		<title>RackManager | Urządzenia</title>
+
+		<link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
+		<link rel="stylesheet" href="/styles/main.css">
+		<script src="app.js" defer></script>
+	</head>
+	<body>
+		<div class="app-shell">
+
+			<aside class="sidebar">
+				<a class="brand" href="/index.html" aria-label="RackManager — strona główna">
+					<span class="brand-mark">R</span>
+					<span>Rack<span class="brand-light">Manager</span></span>
+				</a>
+
+        		<div class="nav-caption">ZARZĄDZANIE</div>
+				<nav class="nav-list" aria-label="Główna nawigacja">
+					<a class="nav-item" href="/index.html"><span class="nav-icon"><i class="bi bi-postcard" aria-hidden="true"></i></span>Przegląd <span class="nav-arrow">↗</span></a>
+					<a class="nav-item active" href="/devices.html"><span class="nav-icon"><i class="bi bi-hdd" aria-hidden="true"></i></span>Urządzenia <span class="nav-count" id="device-count">0</span></a>
+					<a class="nav-item" href="/events.html"><span class="nav-icon"><i class="bi bi-calendar-event" aria-hidden="true"></i></span>Zdarzenia</a>
+					<a class="nav-item" href="/automations.html"><span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>Automatyzacje</a>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="sidebar-info">
+						<div class="info-icon"><i class="bi bi-github" aria-hidden="true"></i></div>
+						<div class="sidebar-version">
+							<strong>RackManager</strong>
+              				<span>Wersja 2.0.0</span>
+              				<a class="update-status" id="github-update-status" href="https://github.com/MrBartek21/RackManager" target="_blank" rel="noopener noreferrer">Sprawdzanie GitHuba…</a>
+						</div>
+              			<span class="version-dot checking" id="github-update-dot"></span>
+					</div>
+				</div>
+			</aside>
+
+			<main class="main-content" id="overview">
+
+				<header class="topbar">
+					<div class="breadcrumb"><strong>Urządzenia</strong></div>
+					<div class="topbar-right">
+						<div class="clock"><span id="clock">--:--:--</span></div>
+            			<div class="clock"><span id="last-update">Oczekiwanie...</span></div>
+						<div class="connection" id="connection"><span></span><b id="connection-label">Łączenie</b></div>
+					</div>
+				</header>
+				
+				<section class="devices-page" id="devices-page">
+					<div class="page-title"><div><span>Wykryte urządzenia MultiMax, ich wersje i dostępne komendy.</span></div>
+						<div class="devices-page-status">
+							<span class="health-badge" id="multimax-status" data-status="danger">MULTIMAX NIEPODŁĄCZONY</span>
+							<span class="page-count" id="devices-page-count">0 urządzeń</span>
+						</div>
+					</div>
+
+					<article class="panel directory-panel">
+						<div class="table-toolbar"><div><h2>LISTA URZĄDZEŃ</h2></div><button class="secondary-button" id="refresh-devices" type="button"><i class="bi bi-arrow-clockwise"></i> Odśwież</button></div>
+						<div class="device-table-wrap"><table class="device-table"><thead><tr><th>Status</th><th>Nazwa</th><th>ID</th><th>Typ</th><th>Firmware</th><th>Hardware</th><th>Protokół</th><th>Interfejs</th><th>Adres</th><th>Numer seryjny</th><th>Komendy</th><th>Ostatnio widziane</th><th></th></tr></thead><tbody id="device-table-body"></tbody></table></div>
+						<div class="empty-placeholder" id="device-table-empty" hidden>Nie wykryto urządzeń. Po podłączeniu adaptera MultiMax pojawią się tutaj.</div>
+					</article>
+
+					<article class="panel directory-panel relay-panel"><div class="panel-heading"><div><h2>WBUDOWANE PRZEKAŹNIKI</h2><p>Stan wyjść i ręczne sterowanie RackManager.</p></div><span class="page-count">2 kanały</span></div><div class="relay-control-grid">
+						<div class="relay-control"><span class="relay-control-icon"><i class="bi bi-plug"></i></span><div><strong>Przekaźnik zewnętrzny · EXT_RLY</strong><small id="relay1-page-state">GPIO23 · oczekiwanie na dane</small></div><button class="relay-toggle-state" id="relay1-page-toggle" type="button" disabled>Steruj</button></div>
+						<div class="relay-control"><span class="relay-control-icon"><i class="bi bi-plug"></i></span><div><strong>Przekaźnik zasilania · POWER_RLY</strong><small id="relay2-page-state">GPIO22 · oczekiwanie na dane</small></div><button class="relay-toggle-state" id="relay2-page-toggle" type="button" disabled>Steruj</button></div>
+					</div><p class="muted-note" id="relay-control-note">Sterowanie wymaga połączenia z kontrolerem przekaźników RackManager.</p></article>
+				</section>
+
+			</main>
+
+		</div>
+	</body>
+</html>

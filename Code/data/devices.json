@@ -1,0 +1,32 @@
+[
+  {
+    "id": "MMX-DEMO-01",
+    "name": "Moduł Multimax",
+    "type": "Moduł I/O",
+    "protocol": "MultiMax",
+    "interface": "RS-485",
+    "address": "0x01",
+    "firmwareVersion": "0.1.0-demo",
+    "hardwareVersion": "1.0-demo",
+    "serialNumber": "MMX-DEMO-0001",
+    "status": "online",
+    "lastSeen": "2026-10-28T00:00:00.000Z",
+    "example": true,
+    "commands": []
+  },
+  {
+    "id": "MMX-DEMO-02",
+    "name": "Moduł Multimax",
+    "type": "Moduł I/O",
+    "protocol": "MultiMax",
+    "interface": "RS-485",
+    "address": "0x02",
+    "firmwareVersion": "0.2.0-demo",
+    "hardwareVersion": "1.0-demo",
+    "serialNumber": "MMX-DEMO-0002",
+    "status": "online",
+    "lastSeen": "2026-10-28T00:00:00.000Z",
+    "example": true,
+    "commands": []
+  }
+]
