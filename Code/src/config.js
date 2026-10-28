@@ -19,10 +19,21 @@ function integerFromEnv(name, fallback, minimum, maximum) {
   return value;
 }
 
+const defaultMultiMaxPort = process.platform === 'linux' && fs.existsSync('/dev/serial0') ? '/dev/serial0' : '';
+
 module.exports = Object.freeze({
   host: process.env.HOST || '0.0.0.0',
   port: integerFromEnv('PORT', 3000, 1, 65535),
   updateIntervalMs: integerFromEnv('UPDATE_INTERVAL_MS', 2000, 500, 60000),
+  deviceOfflineTimeoutMs: integerFromEnv('DEVICE_OFFLINE_TIMEOUT_MS', 30000, 2000, 3600000),
+  multiMaxPort: process.env.MULTIMAX_PORT || defaultMultiMaxPort,
+  multiMaxBaudRate: integerFromEnv('MULTIMAX_BAUD_RATE', 115200, 1200, 1000000),
+  multiMaxAddress: integerFromEnv('MULTIMAX_GATEWAY_ADDRESS', 0, 0, 65534),
+  relay1Gpio: integerFromEnv('RACKMANAGER_RELAY1_GPIO', 23, 0, 53),
+  relay2Gpio: integerFromEnv('RACKMANAGER_RELAY2_GPIO', 22, 0, 53),
+  multiMaxDirectionGpio: integerFromEnv('MULTIMAX_REDE_GPIO', 18, 0, 53),
+  relayActiveLow: (process.env.RACKMANAGER_RELAY_ACTIVE_LOW || 'false').toLowerCase() === 'true',
+  gpioCommand: process.env.RACKMANAGER_GPIO_COMMAND || 'pinctrl',
   demoMode: (process.env.DEMO_MODE || 'true').toLowerCase() !== 'false',
   staticDirectory: path.join(__dirname, '..', 'public'),
 });
