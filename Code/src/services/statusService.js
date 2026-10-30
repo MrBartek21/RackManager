@@ -3,17 +3,23 @@
 const config = require('../config');
 const { readSystemMetrics, readNetworkUsage } = require('./systemMetrics');
 const { readPeripherals } = require('./peripheralsMetrics');
-const { readDemoMetrics, readDemoPeripherals } = require('./demoMetrics');
-const { getDevices } = require('./deviceService');
-const { processAutomations } = require('./automationService');
-const { readRelayState, readRelayStates } = require('./relayService');
-const multiMaxTransport = require('./multimaxTransport');
+
+
+//const { getDevices } = require('./deviceService');
+//const { processAutomations } = require('./automationService');
+
+
+//const { readRelayState, readRelayStates } = require('./relayService');
+const relayManager = require('./relayManager');
+
+
+//const multiMaxTransport = require('./multimaxTransport');
 const { addEvent } = require('./eventService');
 
-let previousPeripherals = null;
-let previousDeviceStatuses = null;
+//let previousPeripherals = null;
+//let previousDeviceStatuses = null;
 
-function recordStateChanges(peripherals, devices) {
+/*function recordStateChanges(peripherals, devices) {
   if (previousPeripherals) {
     for (const key of ['door', 'relay1', 'relay2']) {
       const before = previousPeripherals[key];
@@ -42,26 +48,42 @@ function recordStateChanges(peripherals, devices) {
     }
   }
   previousDeviceStatuses = statuses;
-}
+}*/
 
 function getStatus() {
-  const isDemoMode = config.demoMode;
-  const system = { ...(isDemoMode ? readDemoMetrics() : readSystemMetrics()), network: readNetworkUsage() };
-  const peripherals = isDemoMode ? readDemoPeripherals() : { ...readPeripherals(), ...readRelayStates() };
-  if (isDemoMode && config.relay1Gpio !== null) peripherals.relay1 = readRelayState('relay1');
-  if (isDemoMode && config.relay2Gpio !== null) peripherals.relay2 = readRelayState('relay2');
-  const devices = getDevices();
-  recordStateChanges(peripherals, devices);
-  processAutomations(system, peripherals);
+  //const isDemoMode = config.demoMode;
+
+  const system = {
+    ...readSystemMetrics(),
+    network: readNetworkUsage(),
+  };
+
+  const peripherals = readPeripherals();
+
+  // Stany przekaźników zawsze pobieramy z relayManager.
+  peripherals.relay1 = config.relay1Gpio !== null ? relayManager.getRelayState(1) : null;
+  peripherals.relay2 = config.relay2Gpio !== null ? relayManager.getRelayState(2) : null;
+
+  //const devices = getDevices();
+  const devices = [];
+
+  //recordStateChanges(peripherals, devices);
+  //processAutomations(system, peripherals);
+
   return {
     type: 'status',
     timestamp: new Date().toISOString(),
-    demoMode: isDemoMode,
+    //demoMode: isDemoMode,
     system,
     peripherals,
     devices,
-    multiMax: { configured: Boolean(config.multiMaxPort), connected: multiMaxTransport.isConnected() },
-    relayControlConfigured: config.relay1Gpio !== null && config.relay2Gpio !== null,
+    /*multiMax: {
+      configured: Boolean(config.multiMaxPort),
+      connected: multiMaxTransport.isConnected(),
+    },*/
+    relayControlConfigured:
+      config.relay1Gpio !== null &&
+      config.relay2Gpio !== null,
   };
 }
 

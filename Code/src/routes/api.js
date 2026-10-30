@@ -4,17 +4,22 @@ const express = require('express');
 const config = require('../config');
 const { getStatus } = require('../services/statusService');
 const { getUpdateStatus } = require('../services/updateService');
-const { getDevices, saveDevice, deleteDevice } = require('../services/deviceService');
+//const { getDevices, saveDevice, deleteDevice } = require('../services/deviceService');
 const { getEvents, addEvent, clearEvents } = require('../services/eventService');
-const { getAutomations, saveAutomation, deleteAutomation, setAutomationEnabled } = require('../services/automationService');
-const { executeCommand } = require('../services/commandService');
-const { registerAnnouncement, processIncomingCommand } = require('../services/multimaxMessageService');
+//const { getAutomations, saveAutomation, deleteAutomation, setAutomationEnabled } = require('../services/automationService');
+
+//const { executeCommand } = require('../services/commandService');
+const relayManager = require('../services/relayManager');
+
+
+//const { registerAnnouncement, processIncomingCommand } = require('../services/multimaxMessageService');
+
 
 const router = express.Router();
 router.get('/health', (_request, response) => response.json({ ok: true, name: 'RackManager', timestamp: new Date().toISOString() }));
 router.get('/status', (_request, response) => response.json(getStatus()));
 router.get('/config', (_request, response) => response.json({
-  demoMode: config.demoMode,
+  //demoMode: config.demoMode,
   updateIntervalMs: config.updateIntervalMs,
   deviceOfflineTimeoutMs: config.deviceOfflineTimeoutMs,
   multiMaxConfigured: Boolean(config.multiMaxPort),
@@ -22,6 +27,8 @@ router.get('/config', (_request, response) => response.json({
 }));
 router.get('/update-status', async (_request, response) => response.json(await getUpdateStatus()));
 
+
+/*
 router.get('/devices', (_request, response) => response.json({ devices: getDevices() }));
 router.post('/devices', (request, response) => {
   if (!request.body || typeof request.body !== 'object' || !request.body.name) {
@@ -50,20 +57,94 @@ router.post('/multimax/message', (request, response) => {
   } catch (error) {
     return response.status(400).json({ error: error.message });
   }
+});*/
+
+
+// Pobieranie stanów przekaźników
+router.get('/relays', (_request, response) => {
+  return response.json({
+    relays: relayManager.getAllRelayStates(),
+  });
 });
 
-router.post('/relays/:relay', async (request, response) => {
-  if (!['relay1', 'relay2'].includes(request.params.relay) || typeof request.body?.state !== 'boolean') {
-    return response.status(400).json({ error: 'Podaj przekaźnik i nowy stan true/false.' });
+// Pobieranie stanu konkretnego przekaźnika
+router.get('/relays/:relay', (request, response) => {
+  const id = Number(String(request.params.relay).replace('relay', ''));
+
+  if (![1, 2].includes(id)) {
+    return response.status(404).json({ error: 'Nie znaleziono przekaźnika.' });
   }
-  const result = await executeCommand('rackmanager', request.params.relay, request.body.state ? 'on' : 'off');
-  if (!result.ok) {
-    addEvent({ title: 'Nie udało się sterować przekaźnikiem', detail: `${request.params.relay}: ${result.error}`, kind: 'yellow-dot' });
-    return response.status(503).json({ error: result.error });
-  }
-  addEvent({ title: 'Zmieniono stan przekaźnika', detail: `${request.params.relay}: ${request.body.state ? 'włączony' : 'wyłączony'}.`, kind: 'green-dot' });
-  return response.json({ ok: true, state: request.body.state });
+
+  return response.json({
+    relay: `relay${id}`,
+    state: relayManager.getRelayState(id),
+  });
 });
+
+// Ustawianie stanu przekaźnika
+router.post('/relays/:relay', (request, response) => {
+  const id = Number(String(request.params.relay).replace('relay', ''));
+
+  if (![1, 2].includes(id) || typeof request.body?.state !== 'boolean') {
+    return response.status(400).json({
+      error: 'Podaj przekaźnik relay1/relay2 i stan true/false.',
+    });
+  }
+
+  try {
+    const state = relayManager.setRelay(id, request.body.state);
+
+    addEvent({
+      title: 'Zmieniono stan przekaźnika',
+      detail: `relay${id}: ${state ? 'włączony' : 'wyłączony'}.`,
+      kind: 'green-dot',
+    });
+
+    return response.json({
+      ok: true,
+      relay: `relay${id}`,
+      state,
+    });
+  } catch (error) {
+    addEvent({
+      title: 'Nie udało się sterować przekaźnikiem',
+      detail: `relay${id}: ${error.message}`,
+      kind: 'yellow-dot',
+    });
+
+    return response.status(503).json({ error: error.message });
+  }
+});
+
+// Przełączanie stanu przekaźnika
+router.post('/relays/:relay/toggle', (request, response) => {
+  const id = Number(String(request.params.relay).replace('relay', ''));
+
+  if (![1, 2].includes(id)) {
+    return response.status(404).json({ error: 'Nie znaleziono przekaźnika.' });
+  }
+
+  try {
+    const state = relayManager.toggleRelay(id);
+
+    addEvent({
+      title: 'Przełączono przekaźnik',
+      detail: `relay${id}: ${state ? 'włączony' : 'wyłączony'}.`,
+      kind: 'blue-dot',
+    });
+
+    return response.json({
+      ok: true,
+      relay: `relay${id}`,
+      state,
+    });
+  } catch (error) {
+    return response.status(503).json({ error: error.message });
+  }
+});
+
+
+
 
 router.get('/events', (_request, response) => response.json({ events: getEvents() }));
 router.post('/events', (request, response) => {
@@ -76,7 +157,7 @@ router.delete('/events', (_request, response) => {
   return response.json({ ok: true });
 });
 
-router.get('/automations', (_request, response) => response.json({ automations: getAutomations() }));
+/*router.get('/automations', (_request, response) => response.json({ automations: getAutomations() }));
 router.post('/automations', (request, response) => {
   const input = request.body;
   if (!input || !String(input.name || '').trim() || !input.trigger || !input.target || !input.command) {
@@ -116,6 +197,6 @@ router.delete('/automations/:id', (request, response) => {
   if (!deleteAutomation(request.params.id)) return response.status(404).json({ error: 'Nie znaleziono automatyzacji.' });
   addEvent({ title: 'Usunięto automatyzację', detail: request.params.id, kind: 'yellow-dot' });
   return response.json({ ok: true });
-});
+});*/
 
 module.exports = router;
